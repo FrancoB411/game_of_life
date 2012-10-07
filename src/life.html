@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>untitled</title>
+        <script src="http://code.jquery.com/jquery-latest.js"></script>
+        <script type="text/javascript" src="spec/Life.js"></script>
+        <!--[if IE]>
+                <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+                <![endif]-->
+       <style>
+         #board {
+           position:absolute;
+           top:5px;
+           right:5px;
+           bottom:5px;
+           left:5px;
+           background-color:gray;
+         }
+         .cell {
+           width:16px;
+           height:16px;
+           border-radius:8px;
+           margin:4px;
+           background-color:red;
+           float:left;
+         }
+         .invisible{
+            visibility:hidden;
+         }
+         .visible {
+           visibility:visible;
+           background-color:green;
+         }
+       </style>
+</head>
+<body>
+  <div id="board">
+    <div id="x1y1" class="cell"> </div>
+    <div id="x2y1" class="cell invisible"> </div>
+  </div>     
+  <script>
+    $(document).ready(function(){
+      var el = $("#x1y1");
+      el.click( function() {
+        var currentClass = $('#x2y1').attr("class");
+        var newClass = (currentClass.match("\\b"+"visible"+"\\b")) ? "invisible" : "visible";
+        $('#x2y1').removeClass().addClass(newClass).addClass("cell");
+      });
+    });
+
+    var puts = function(info) {
+      console.log(info);
+    }
+  var Board = {
+      width :  window.innerWidth -10,
+      height : window.innerHeight -10,
+      cell_width : 24,
+      cells_across : function() { return Math.floor(this.width/this.cell_width) },
+      cells_high : function() { return Math.floor(this.height/this.cell_width) },
+      get_size : function() { return [this.width, this.height] },
+    };
+
+    puts( Board.cells_across() );
+    puts( Board.cells_high() );    
+   
+    //var board = new Board();
+      // boardHeight: getHeight -10,
+      // cellWidth: 24,
+      // testWidth: this.boardWidth,
+      // cellsX: Math.floor(this.boardWidth/cellWidth),
+      // cellsY: ''
+     //toArray:  function(){ for(var i =0; i < 52; i++) {
+      //            y[i] = i+1;
+        //        }
+    // };
+
+    // var getCellsAcross = function() {
+    //   return Math.floor(GOL.boardWidth/GOL.cellWidth);
+    // }
+    // console.log(getCellsAcross());
+ 
+  </script>
+</body>
+</html>
+
