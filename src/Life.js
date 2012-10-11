@@ -32,13 +32,20 @@ Board.prototype.number_of_rows = function() {
 	return Math.floor( this.window_height()/this.cell_size());
 };
 
-// Board.prototype.draw_row = function() {
-// 	var max_cells = this.cells_per_row();
-// 	var current_board = $('#game-board');
-// 	for(var i = 0; i<max_cells; i++){
-// 		current_board.append("<div id='" + (i+1) +  "-1' class='cell-alive'></div>");
-// 	}
-// };
+Board.prototype.draw_row = function() {
+	var max_cells = this.cells_per_row();
+	var current_board = $('#game-board');
+  for(var i = 0; i<max_cells; i++){
+	  current_board.append("<div id='" + (i+1) +  "-1' class='cell-alive'></div>");
+  }
+};
+
+Board.prototype.draw_board = function() {
+  var max_cells = this.number_of_rows();
+  for(var i = 0; i<max_cells; i++){
+    this.draw_row();
+  }
+};
 
 //   this.isPlaying = true;
 // };
