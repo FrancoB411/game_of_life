@@ -12,6 +12,8 @@
 function Board() {
 }
 
+Board.prototype.current_board = $('#game-board');
+
 Board.prototype.window_width = function() {
   return window.innerWidth -10;
 };
@@ -32,12 +34,17 @@ Board.prototype.number_of_rows = function() {
 	return Math.floor( this.window_height()/this.cell_size());
 };
 
+Board.prototype.color = function() {
+  return '#'+Math.floor(Math.random()*16777215).toString(16);
+};
+
 Board.prototype.draw_row = function() {
 	var max_cells = this.cells_per_row();
-	var current_board = $('#game-board');
+	this.current_board = $('#game-board');
   for(var i = 0; i<max_cells; i++){
-	  current_board.append("<div id='" + (i+1) +  "-1' class='cell-alive'></div>");
+	  this.current_board.append("<div id='" + (i+1) +  "-1' class='cell-alive' style='background-color:" + this.color() + ";'></div>");
   }
+  // return max_cells;
 };
 
 Board.prototype.draw_board = function() {

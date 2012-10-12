@@ -39,13 +39,14 @@ describe("Board", function() {
 	});
 
 	// pending
-	// it("should populate a row with the correct number of cells", function() {
-	// 	$('body').append();
+	it("should populate a row with the correct number of cells", function() {
+		num_cells = board.draw_row();
+
 	// 	//
 	// 	var first_cell = $("#1-1");
 	// 	expect(first_cell.attr("id")).toEqual("1-1");
 	// 	//expect(last_cell_idl).toEqual("object");
-	// });
+	});
 	
 });
 
