@@ -38,14 +38,13 @@ describe("Board", function() {
 		expect(typeof(board)).toEqual("object");
 	});
 
-
-// Add jasmine JQuery
+	// pending
 	// it("should populate a row with the correct number of cells", function() {
-	// 	board.draw_row();
-	// 	var last_cell_x = document.getElementById("1-1");
-	// 	alert(last_cell_x);
-	// 	expect(first_cell_id).toEqual("object");
-	// 	expect(last_cell_idl).toEqual("object");
+	// 	$('body').append();
+	// 	//
+	// 	var first_cell = $("#1-1");
+	// 	expect(first_cell.attr("id")).toEqual("1-1");
+	// 	//expect(last_cell_idl).toEqual("object");
 	// });
 	
 });
