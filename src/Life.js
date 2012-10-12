@@ -35,7 +35,7 @@ Board.prototype.number_of_rows = function() {
 };
 
 Board.prototype.color = function() {
-  return '#'+Math.floor(Math.random()*16777215).toString(16);
+  return '#'+('00000'+(Math.random()*16777216<<0).toString(16)).substr(-6);
 };
 
 Board.prototype.draw_row = function() {
