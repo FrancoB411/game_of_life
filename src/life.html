@@ -40,20 +40,20 @@
   <div id="game-board">
   </div>     
   <script>
-    $(document).ready(function(){
-      var el = $("#x1y1");
-      el.click( function() {
-        var currentClass = $('#x2y1').attr("class");
-        var newClass = (currentClass.match("alive")) ? "cell-dead" : "cell-alive";
-        $('#x2y1').removeClass().addClass(newClass);
-      });
-    });
+    // $(document).ready(function(){
+    //   var el = $("#x1y1");
+    //   el.click( function() {
+    //     var currentClass = $('#x2y1').attr("class");
+    //     var newClass = (currentClass.match("alive")) ? "cell-dead" : "cell-alive";
+    //     $('#x2y1').removeClass().addClass(newClass);
+    //   });
+    // });
 
-    var puts = function(info) {
-      console.log(info);
+    // var puts = function(info) {
+    //   console.log(info);
 
 
-    }
+    // }
   // var Board = {
   //     width :  window.innerWidth -10,
   //     height : window.innerHeight -10,
@@ -82,7 +82,8 @@
     // }
     // console.log(getCellsAcross());
           board = new Board;
-          board.draw_board();
+          board.getGameBoard();
+          board.drawBoard();
   </script>
 </body>
 </html>

@@ -11,52 +11,47 @@
 
 function Board() {
 }
+Board.prototype.gameBoard = undefined;
 
-Board.prototype.current_board = $('#game-board');
+Board.prototype.getGameBoard = function() {
+  return this.gameBoard = $("#game-board");
+};
 
-Board.prototype.window_width = function() {
+Board.prototype.windowWidth = function() {
   return window.innerWidth -10;
 };
 
-Board.prototype.window_height = function() {
+Board.prototype.windowHeight = function() {
   return window.innerHeight -10;
 };
 
-Board.prototype.cell_size = function() {
+Board.prototype.cellSize = function() {
   return 24;
 };
 
-Board.prototype.cells_per_row = function() {
-	return Math.floor( this.window_width()/this.cell_size() );
+Board.prototype.cellsPerRow = function() {
+	return Math.floor( this.windowWidth()/this.cellSize() );
 };
 
-Board.prototype.number_of_rows = function() {
-	return Math.floor( this.window_height()/this.cell_size());
+Board.prototype.numberOfRows = function() {
+	return Math.floor( this.windowHeight()/this.cellSize() );
 };
 
 Board.prototype.color = function() {
   return '#'+('00000'+(Math.random()*16777216<<0).toString(16)).substr(-6);
 };
 
-Board.prototype.draw_row = function() {
-	var max_cells = this.cells_per_row();
-	this.current_board = $('#game-board');
-  for(var i = 0; i<max_cells; i++){
-	  this.current_board.append("<div id='" + (i+1) +  "-1' class='cell-alive' style='background-color:" + this.color() + ";'></div>");
-  }
-  // return max_cells;
-};
-
-Board.prototype.draw_board = function() {
-  var max_cells = this.number_of_rows();
-  for(var i = 0; i<max_cells; i++){
-    this.draw_row();
+Board.prototype.drawRow = function() {
+	var maxCells = this.cellsPerRow();
+  for(var i = 0; i<maxCells; i++){
+    this.gameBoard.append("<div id='" + (i+1) +  "-1' class='cell-alive' style='background-color:" + this.color() + ";'></div>");
   }
 };
 
-//   this.isPlaying = true;
-// };
-// 
-// Board.prototype.makeFavorite = function() {
-//   this.currentlyPlayingSong.persistFavoriteStatus(true);
-// };
+Board.prototype.drawBoard = function() {
+  var maxCells = this.numberOfRows();
+  for(var i = 0; i<maxCells; i++){
+    this.drawRow();
+  }
+};
+
