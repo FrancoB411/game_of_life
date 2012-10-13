@@ -38,20 +38,16 @@ describe("Board", function() {
 		expect(typeof(board)).toEqual("object");
 	});
 
-	// pending
 	it("should populate a row with the correct number of cells", function() {
+		var correctRowLength = board.cellsPerRow();
+		var oneCellTooLong = correctRowLength + 1;
 		var myDiv = document.createElement("div");
 		board.gameBoard = $("div");
 		board.drawRow();
-		var cells = $(".cell-alive");
-		alert(board.cellsPerRow());
-		alert(cells.size());
-
-
-	// 	//
-	// 	var first_cell = $("#1-1");
-	// 	expect(first_cell.attr("id")).toEqual("1-1");
-	// 	//expect(last_cell_idl).toEqual("object");
+		var lastCell = $("#" + correctRowLength + "-1.cell-alive");
+		var tooLong = $("#" + oneCellTooLong + "-1.cell-alive");
+		expect(lastCell[0]).toBeDefined();
+		expect(tooLong[0]).not.toBeDefined();
 	});
 	
 });
