@@ -13,16 +13,17 @@ function Board() {
 }
 Board.prototype.gameBoard = undefined;
 
+
 Board.prototype.getGameBoard = function() {
   return this.gameBoard = $("#game-board");
 };
 
 Board.prototype.windowWidth = function() {
-  return window.innerWidth -10;
+  return window.innerWidth - 10;
 };
 
 Board.prototype.windowHeight = function() {
-  return window.innerHeight -10;
+  return window.innerHeight - 10;
 };
 
 Board.prototype.cellSize = function() {
