@@ -41,12 +41,25 @@ describe("Board", function() {
 	it("should populate a row with the correct number of cells", function() {
 		var correctRowLength = board.cellsPerRow();
 		var oneCellTooLong = correctRowLength + 1;
-		var myDiv = document.createElement("div");
-		board.gameBoard = $("div");
-		board.drawRow();
-		var lastCell = $("#" + correctRowLength + "-1.cell-alive");
-		var tooLong = $("#" + oneCellTooLong + "-1.cell-alive");
+		var testBoard = document.createElement("div");
+		testBoard.setAttribute("class", "test-board");
+		board.gameBoard = $(testBoard);
+		board.drawRow(1);
+		var lastCell = board.gameBoard.children("#" + correctRowLength + "-1");
+		var tooLong = board.gameBoard.children("#" + oneCellTooLong + "-1");
 		expect(lastCell[0]).toBeDefined();
+		expect(tooLong[0]).not.toBeDefined();
+	});
+
+	it("should populate a board with the correct number of rows", function() {
+		var correctRowCount = board.numberOfRows();
+		var oneRowTooLong = board.numberOfRows() + 1;
+		var testBoard = document.createElement("div");
+		board.gameBoard = $(testBoard);
+		board.drawBoard();
+		var lastRow = board.gameBoard.children("#1-" + correctRowCount);
+		var tooLong = board.gameBoard.children("#1-" + oneRowTooLong);
+		expect(lastRow[0]).toBeDefined();
 		expect(tooLong[0]).not.toBeDefined();
 	});
 	

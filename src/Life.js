@@ -42,17 +42,17 @@ Board.prototype.color = function() {
   return '#'+('00000'+(Math.random()*16777216<<0).toString(16)).substr(-6);
 };
 
-Board.prototype.drawRow = function() {
+Board.prototype.drawRow = function(num) {
 	var maxCells = this.cellsPerRow();
   for(var i = 0; i<maxCells; i++){
-    this.gameBoard.append("<div id='" + (i+1) +  "-1' class='cell-alive' style='background-color:" + this.color() + ";'></div>");
+    this.gameBoard.append("<div id='" + (i+1) +  "-" + num + "' class='cell-alive' style='background-color:" + this.color() + ";'></div>");
   }
 };
 
 Board.prototype.drawBoard = function() {
   var maxCells = this.numberOfRows();
-  for(var i = 0; i<maxCells; i++){
-    this.drawRow();
-  }
+  for(var i = 0; i < maxCells; i++){
+    this.drawRow(i+1);
+  };
 };
 
