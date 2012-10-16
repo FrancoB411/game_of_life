@@ -11,48 +11,67 @@
 
 function Board() {
 }
-Board.prototype.gameBoard = undefined;
-
-
-Board.prototype.getGameBoard = function() {
-  return this.gameBoard = $("#game-board");
+Board.prototype.vals = {
+  gameBoard: $("#game-board"),
+  cellSize: 24,
+  defaultMargin: 15,
+  verticalMargin: undefined,
+  horizontalMargin: undefined,
+  boardHeight: undefined,
+  boardWidth: undefined
 };
 
-Board.prototype.windowWidth = function() {
-  return window.innerWidth - 10;
+Board.prototype.setVerticalMargin = function() {
+  var additionalMargin = Math.floor((window.innerHeight % this.vals.cellSize)/2);
+  this.vals.verticalMargin = this.vals.defaultMargin + additionalMargin;
 };
 
-Board.prototype.windowHeight = function() {
-  return window.innerHeight - 10;
+Board.prototype.setHorizontalMargin = function() {
+  var additionalMargin = Math.floor((window.innerWidth % this.vals.cellSize)/2);
+  this.vals.horizontalMargin = this.vals.defaultMargin + additionalMargin;
 };
 
-Board.prototype.cellSize = function() {
-  return 24;
+Board.prototype.setBoardHeight = function() {
+  this.setVerticalMargin();
+  this.vals.boardHeight = window.innerHeight - (this.vals.verticalMargin *2);
 };
 
-Board.prototype.cellsPerRow = function() {
-	return Math.floor( this.windowWidth()/this.cellSize() );
+Board.prototype.setBoardWidth = function() {
+  this.setHorizontalMargin();
+  this.vals.boardWidth = window.innerWidth - (this.vals.horizontalMargin *2);
 };
 
-Board.prototype.numberOfRows = function() {
-	return Math.floor( this.windowHeight()/this.cellSize() );
-};
+// // Board.prototype.cellsPerRow = function() {
+// // 	return Math.floor( this.windowWidth()/this.cellSize );
+// // };
 
-Board.prototype.color = function() {
-  return '#'+('00000'+(Math.random()*16777216<<0).toString(16)).substr(-6);
-};
+// Board.prototype.numberOfRows = function() {
+// 	return Math.floor( this.windowHeight()/this.cellSize() );
+// };
 
-Board.prototype.drawRow = function(num) {
-	var maxCells = this.cellsPerRow();
-  for(var i = 0; i<maxCells; i++){
-    this.gameBoard.append("<div id='" + (i+1) +  "-" + num + "' class='cell-alive' style='background-color:" + this.color() + ";'></div>");
-  }
-};
+// Board.prototype.setMarginVertical =  function() {
+//   this.margin = this.defaultMargin + window.innerHeight % this.cellsPerRow() -1;
+// };
 
-Board.prototype.drawBoard = function() {
-  var maxCells = this.numberOfRows();
-  for(var i = 0; i < maxCells; i++){
-    this.drawRow(i+1);
-  };
-};
+// Board.prototype.setMarginHorizontal =  function() {
+//   this.margin = this.defaultMargin + this.windowWidth()%this.cellsPerRow() -1;
+// };
+
+// Board.prototype.color = function() {
+//   return '#'+('00000'+(Math.random()*16777216<<0).toString(16)).substr(-6);
+// };
+
+// Board.prototype.drawRow = function(num) {
+// 	var maxCells = this.cellsPerRow();
+//   for(var i = 0; i<maxCells; i++){
+//     this.gameBoard.append("<div id='" + (i+1) +  "-" + num + "' class='cell-alive' style='background-color:" + this.color() + ";'></div>");
+//   }
+// };
+
+// Board.prototype.drawBoard = function() {
+//   var maxCells = this.numberOfRows();
+//   for(var i = 0; i < maxCells; i++){
+//     this.drawRow(i+1);
+//   };
+// };
 

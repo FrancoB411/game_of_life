@@ -1,28 +1,61 @@
 describe("Board", function() {
-  //draw a row of cells
-	// 52.times do |i|
-	//    draw a cell   
-	//end
-  //make a board div 
-  //fill board div 
 
   beforeEach(function() {
     board = new Board();
   });
 
-  it("should be able to measure the window size", function() {
-		var width = board.windowWidth();
-    var height = board.windowHeight();
-		expect(width).toEqual(window.innerWidth -10);
-		expect(height).toEqual(window.innerHeight -10);
-  });
+	it("creates a board object", function() {
+		expect(typeof(board)).toEqual("object");
+	});
 
-	it("should have a cell size", function() {
-		var cellSize = board.cellSize();
+	it("has a cell size value", function() {
+		var cellSize = board.vals.cellSize;
 		expect(cellSize).toEqual(24);
 	});
 
-	it("should be able to calculate the number of cells to draw per row", function() {
+	it("has a default margin", function() {
+		var defMargin = 15;
+		board.vals.defaultMargin = defMargin;
+		expect(defMargin).toEqual(board.vals.defaultMargin);
+	});
+
+	it("calculates vertical margins", function() {
+		board.setVerticalMargin();
+		var additionalMargin = Math.floor((window.innerHeight % board.vals.cellSize)/2);
+		var vMargin = board.vals.defaultMargin + additionalMargin;
+		expect(vMargin).toEqual(board.vals.verticalMargin);
+	});
+
+	it("calculates horizontal margins", function() {
+		board.setHorizontalMargin();
+		var additionalMargin = Math.floor((window.innerWidth % board.vals.cellSize)/2);
+		var hMargin = board.vals.defaultMargin + additionalMargin;
+		expect(hMargin).toEqual(board.vals.horizontalMargin);
+	});
+
+	it("calculates board Height", function() {
+		board.setBoardHeight();
+		var boardHeight = (window.innerHeight - (board.vals.verticalMargin * 2));
+		expect(boardHeight).toEqual(board.vals.boardHeight);
+	});
+
+	it("calculates board Width", function() {
+		board.setBoardWidth();
+		var boardWidth = (window.innerWidth - (board.vals.horizontalMargin * 2));
+		expect(boardWidth).toEqual(board.vals.boardWidth);
+	});
+
+	//Pending
+	it("make a board with the appropriate height and width", function() {
+		var testBoard = document.createElement("div");
+		board.gameBoard = $(testBoard);
+		bard.sizeBoard();
+
+		expect(board.gameboard.height()).toEqual(board.vals.boardHeight);
+		expect(board.gameboard.width()).toEqual(board.vals.boardWidth);
+	});
+
+	it("draws the correct number of cells per row", function() {
 		var cellsPerRow = board.cellsPerRow();
 		var cells_that_fit_in_row = Math.floor(board.windowWidth()/board.cellSize() );
 		expect(cellsPerRow).toEqual(cells_that_fit_in_row);
@@ -34,9 +67,7 @@ describe("Board", function() {
 		expect(numberOfRows).toEqual(rows_that_fit_in_window);
 	});
 	
-	it("should be able to create a board object", function() {
-		expect(typeof(board)).toEqual("object");
-	});
+
 
 	it("should populate a row with the correct number of cells", function() {
 		var correctRowLength = board.cellsPerRow();
