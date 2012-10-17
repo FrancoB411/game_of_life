@@ -41,20 +41,29 @@ Board.prototype.setBoardWidth = function() {
   this.vals.boardWidth = window.innerWidth - (this.vals.horizontalMargin *2);
 };
 
+Board.prototype.drawBoard = function() {
+  var height, width, vMargin, hMargin;
+  this.setBoardHeight();
+  this.setBoardWidth();
+  height = this.vals.boardHeight;
+  width = this.vals.boardWidth;
+  vMargin = this.vals.verticalMargin;
+  hMargin = this.vals.horizontalMargin;
+  this.vals.gameBoard.css({
+    "height"        : height,
+    "width"         : width,
+    "margin-top"    : vMargin,
+    "margin-right"  : hMargin,
+    "margin-bottom" : vMargin,
+    "margin-left"   : hMargin
+  })
+};
 // // Board.prototype.cellsPerRow = function() {
 // // 	return Math.floor( this.windowWidth()/this.cellSize );
 // // };
 
 // Board.prototype.numberOfRows = function() {
 // 	return Math.floor( this.windowHeight()/this.cellSize() );
-// };
-
-// Board.prototype.setMarginVertical =  function() {
-//   this.margin = this.defaultMargin + window.innerHeight % this.cellsPerRow() -1;
-// };
-
-// Board.prototype.setMarginHorizontal =  function() {
-//   this.margin = this.defaultMargin + this.windowWidth()%this.cellsPerRow() -1;
 // };
 
 // Board.prototype.color = function() {

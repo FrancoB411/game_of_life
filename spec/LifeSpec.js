@@ -45,14 +45,13 @@ describe("Board", function() {
 		expect(boardWidth).toEqual(board.vals.boardWidth);
 	});
 
-	//Pending
-	it("make a board with the appropriate height and width", function() {
+	it("draws a board with the appropriate height and width", function() {
 		var testBoard = document.createElement("div");
-		board.gameBoard = $(testBoard);
-		bard.sizeBoard();
+		board.vals.gameBoard = $(testBoard);
+		board.drawBoard();
 
-		expect(board.gameboard.height()).toEqual(board.vals.boardHeight);
-		expect(board.gameboard.width()).toEqual(board.vals.boardWidth);
+		expect(board.vals.gameBoard.height()).toEqual(board.vals.boardHeight);
+		expect(board.vals.gameBoard.width()).toEqual(board.vals.boardWidth);
 	});
 
 	it("draws the correct number of cells per row", function() {
