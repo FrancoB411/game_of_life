@@ -12,13 +12,14 @@
 function Board() {
 }
 Board.prototype.vals = {
-  gameBoard: $("#game-board"),
+  boardHeight: undefined,
+  boardWidth: undefined,
+  cellsPerRow: undefined,
   cellSize: 24,
   defaultMargin: 15,
+  gameBoard: $("#game-board"),
   verticalMargin: undefined,
-  horizontalMargin: undefined,
-  boardHeight: undefined,
-  boardWidth: undefined
+  horizontalMargin: undefined
 };
 
 Board.prototype.setVerticalMargin = function() {
@@ -58,9 +59,11 @@ Board.prototype.drawBoard = function() {
     "margin-left"   : hMargin
   })
 };
-// // Board.prototype.cellsPerRow = function() {
-// // 	return Math.floor( this.windowWidth()/this.cellSize );
-// // };
+
+Board.prototype.getCellsPerRow = function() {
+  this.drawBoard();
+	this.vals.cellsPerRow =  Math.floor( this.vals.boardWidth/this.vals.cellSize );
+};
 
 // Board.prototype.numberOfRows = function() {
 // 	return Math.floor( this.windowHeight()/this.cellSize() );

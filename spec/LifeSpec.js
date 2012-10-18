@@ -67,7 +67,6 @@ describe("Board", function() {
 	});
 	
 
-
 	it("should populate a row with the correct number of cells", function() {
 		var correctRowLength = board.cellsPerRow();
 		var oneCellTooLong = correctRowLength + 1;
