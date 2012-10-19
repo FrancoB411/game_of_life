@@ -54,35 +54,38 @@ describe("Board", function() {
 		expect(board.vals.gameBoard.width()).toEqual(board.vals.boardWidth);
 	});
 
-	it("draws the correct number of cells per row", function() {
-		var cellsPerRow = board.cellsPerRow();
-		var cells_that_fit_in_row = Math.floor(board.windowWidth()/board.cellSize() );
+	it("calculates the correct number of cells per row", function() {
+		board.getCellsPerRow();
+		var cellsPerRow = board.vals.cellsPerRow;
+		var cells_that_fit_in_row = Math.floor(board.vals.boardWidth/board.vals.cellSize);
 		expect(cellsPerRow).toEqual(cells_that_fit_in_row);
 	});
 
 	it("should be able to calculate the number of rows", function() {
-		var numberOfRows = board.numberOfRows();
-		var rows_that_fit_in_window = Math.floor(board.windowHeight()/board.cellSize() );
-		expect(numberOfRows).toEqual(rows_that_fit_in_window);
+		board.getNumberOfRows();
+		var numberOfRows = board.vals.numberOfRows;
+		var rows_that_fit_in_board = Math.floor(board.vals.boardHeight/board.vals.cellSize);
+		expect(numberOfRows).toEqual(rows_that_fit_in_board);
 	});
-	
 
 	it("should populate a row with the correct number of cells", function() {
-		var correctRowLength = board.cellsPerRow();
-		var oneCellTooLong = correctRowLength + 1;
+		board.drawBoard();
+		board.getCellsPerRow();
+		var correctRowLength = board.vals.cellsPerRow;
+		var oneCellTooLong = board.vals.cellsPerRow + 1;
 		var testBoard = document.createElement("div");
-		testBoard.setAttribute("class", "test-board");
-		board.gameBoard = $(testBoard);
+		// testBoard.setAttribute("id", "test-board");
+		board.vals.gameBoard = $(testBoard);
 		board.drawRow(1);
-		var lastCell = board.gameBoard.children("#" + correctRowLength + "-1");
-		var tooLong = board.gameBoard.children("#" + oneCellTooLong + "-1");
+		var lastCell = board.vals.gameBoard.children("#" + correctRowLength + "-1");
+		var tooLong = board.vals.gameBoard.children("#" + oneCellTooLong + "-1");
 		expect(lastCell[0]).toBeDefined();
 		expect(tooLong[0]).not.toBeDefined();
 	});
 
 	it("should populate a board with the correct number of rows", function() {
-		var correctRowCount = board.numberOfRows();
-		var oneRowTooLong = board.numberOfRows() + 1;
+		var correctRowCount = board.setNumberOfRows();
+		var oneRowTooLong = board.setNumberOfRows() + 1;
 		var testBoard = document.createElement("div");
 		board.gameBoard = $(testBoard);
 		board.drawBoard();

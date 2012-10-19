@@ -113,7 +113,10 @@
     // }
     // console.log(getCellsAcross());
           board = new Board;
+          board.vals.gameBoard = $('#game-board');
           board.drawBoard();
+          board.getCellsPerRow();
+          board.drawRow();
   </script>
 </body>
 </html>
