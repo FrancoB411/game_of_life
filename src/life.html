@@ -42,11 +42,7 @@
           }
          #game-board {
            position:absolute;
-           top:15px;
-           right:15px;
-           bottom:15px;
-           left:15px;
-           /*background-color:gray;*/
+         /*  background-color:red;*/
          }
          .cell-alive {
            width:16px;
@@ -113,10 +109,7 @@
     // }
     // console.log(getCellsAcross());
           board = new Board;
-          board.vals.gameBoard = $('#game-board');
-          board.drawBoard();
-          board.getCellsPerRow();
-          board.drawRow();
+          board.init();
   </script>
 </body>
 </html>

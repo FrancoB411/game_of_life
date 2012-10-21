@@ -5,77 +5,100 @@ function Board() {
 Board.prototype.vals = {
   boardHeight: undefined,
   boardWidth: undefined,
+  canvasHeight: undefined,
+  canvasWidth: undefined,
   cellsPerRow: undefined,
   cellSize: 24,
-  defaultMargin: 15,
-  gameBoard: $("#game-board"),
-  verticalMargin: undefined,
-  horizontalMargin: undefined
+  gameBoard: undefined,
+  marginDefault: 15,
+  marginHorizontal: undefined,
+  marginVertical: undefined,
+  rowsPerBoard: undefined
 };
-
-Board.prototype.setVerticalMargin = function() {
-  var additionalMargin = Math.floor((window.innerHeight % this.vals.cellSize)/2);
-  this.vals.verticalMargin = this.vals.defaultMargin + additionalMargin;
+Board.prototype.setGameBoard =  function() {
+  this.vals.gameBoard = $("#game-board");
+}
+//gives us the window height minus the default margins.
+Board.prototype.setCanvasHeight = function() {
+  board.vals.canvasHeight = Math.floor(window.innerHeight - (board.vals.marginDefault*2));
+  return board.vals.canvasHeight;
 };
-
-Board.prototype.setHorizontalMargin = function() {
-  var additionalMargin = Math.floor((window.innerWidth % this.vals.cellSize)/2);
-  this.vals.horizontalMargin = this.vals.defaultMargin + additionalMargin;
+//gives us the window width minus the default margins.
+Board.prototype.setCanvasWidth = function() {
+  board.vals.canvasWidth = Math.floor(window.innerWidth - (board.vals.marginDefault*2));
+  return board.vals.canvasWidth;
 };
-
+//Adjsts horizontal margins to horizontally center the board by adding additional margin to make up for pixels left over from dividing the boardwidth/cellSize
+Board.prototype.setMarginHorizontal = function() {
+  var marginAdditional = Math.floor((this.vals.canvasWidth % this.vals.cellSize)/2);
+  this.vals.marginHorizontal = this.vals.marginDefault + marginAdditional;
+  return this.vals.marginHorizontal;
+};
+//Adjusts vertical margins to vertically center the board by adding additional margin to make up for pixels left over from dividing the boardheight/cellSize
+Board.prototype.setMarginVertical = function() {
+  var marginAdditional = Math.floor((this.vals.canvasHeight % this.vals.cellSize)/2);
+  this.vals.marginVertical = this.vals.marginDefault + marginAdditional;
+  return this.vals.marginVertical;
+};
+//Calculates height of the board
 Board.prototype.setBoardHeight = function() {
-  this.setVerticalMargin();
-  this.vals.boardHeight = window.innerHeight - (this.vals.verticalMargin *2);
+  this.vals.boardHeight = window.innerHeight - (this.vals.marginVertical *2);
+  return this.vals.boardHeight;
 };
-
+//Calculates width of the board
 Board.prototype.setBoardWidth = function() {
-  this.setHorizontalMargin();
-  this.vals.boardWidth = window.innerWidth - (this.vals.horizontalMargin *2);
+  this.vals.boardWidth = window.innerWidth - (this.vals.marginHorizontal * 2);
+  return this.vals.boardWidth;
 };
 
 Board.prototype.drawBoard = function() {
-  var height, width, vMargin, hMargin;
-  this.setBoardHeight();
-  this.setBoardWidth();
-  height = this.vals.boardHeight;
-  width = this.vals.boardWidth;
-  vMargin = this.vals.verticalMargin;
-  hMargin = this.vals.horizontalMargin;
   this.vals.gameBoard.css({
-    "height"        : height,
-    "width"         : width,
-    "margin-top"    : vMargin,
-    "margin-right"  : hMargin,
-    "margin-bottom" : vMargin,
-    "margin-left"   : hMargin
-  })
+    "height"        : this.vals.boardHeight,
+    "width"         : this.vals.boardWidth,
+    "margin-top"    : this.vals.marginVertical,
+    "margin-left"   : this.vals.marginHorizontal
+  });
 };
 
-Board.prototype.getCellsPerRow = function() {
-  this.drawBoard();
+Board.prototype.setCellsPerRow = function() {
 	this.vals.cellsPerRow =  Math.floor( this.vals.boardWidth/this.vals.cellSize );
+  return this.vals.cellsPerRow;
 };
 
-Board.prototype.getNumberOfRows = function() {
-  this.drawBoard();
-	this.vals.numberOfRows = Math.floor(this.vals.boardHeight/this.vals.cellSize );
+Board.prototype.setRowsPerBoard = function() {
+	this.vals.rowsPerBoard = Math.floor(this.vals.boardHeight/this.vals.cellSize );
+  return this.vals.rowsPerBoard;
 };
 
 Board.prototype.color = function() {
   return '#'+('00000'+(Math.random()*16777216<<0).toString(16)).substr(-6);
 };
 
-Board.prototype.drawRow = function(num) {
+Board.prototype.drawOneRow = function(num) {
 	var maxCells = this.vals.cellsPerRow;
   for(var i = 0; i<maxCells; i++){
     this.vals.gameBoard.append("<div id='" + (i+1) +  "-" + num + "' class='cell-alive' style='background-color:" + this.color() + ";'></div>");
   }
 };
 
-// Board.prototype.drawBoard = function() {
-//   var maxCells = this.numberOfRows();
-//   for(var i = 0; i < maxCells; i++){
-//     this.drawRow(i+1);
-//   };
-// };
+Board.prototype.drawAllRows = function() {
+  var maxCells = this.vals.rowsPerBoard;
+  for(var i = 0; i < maxCells; i++){
+    this.drawOneRow(i+1);
+  }
+};
+
+Board.prototype.init = function() {
+    board.setGameBoard();
+    board.setCanvasHeight();
+    board.setCanvasWidth();
+    board.setMarginHorizontal();
+    board.setMarginVertical();
+    board.setBoardHeight();
+    board.setBoardWidth();
+    board.setCellsPerRow();
+    board.setRowsPerBoard();
+    board.drawBoard();
+    board.drawAllRows();
+};
 
