@@ -77,7 +77,7 @@ Board.prototype.color = function() {
 Board.prototype.drawOneRow = function(num) {
 	var maxCells = this.vals.cellsPerRow;
   for(var i = 0; i<maxCells; i++){
-    this.vals.gameBoard.append("<div id='" + (i+1) +  "-" + num + "' class='cell-alive' style='background-color:" + this.color() + ";'></div>");
+    this.vals.gameBoard.append("<div id='" + (i+1) +  "-" + num + "'" + cell.aliveOrDead() + " style='background-color:" + this.color() + ";'></div>");
   }
 };
 
@@ -102,3 +102,12 @@ Board.prototype.init = function() {
     board.drawAllRows();
 };
 
+// function Cell() {
+// }
+// Cell.prototype.aliveOrDead() {
+
+// }
+//make cell object
+//coordinate, class, color, visibility
+//random-toggle as a "global" function
+//

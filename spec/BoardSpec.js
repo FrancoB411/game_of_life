@@ -1,6 +1,7 @@
 describe("Board", function() {
 
   beforeEach(function() {
+    cell = new Cell();
     board = new Board();
     board.init();
   });
@@ -106,6 +107,8 @@ describe("Board", function() {
 		expect(lastRow[0]).toBeDefined();
 		expect(tooLong[0]).not.toBeDefined();
 	});
+
+
 	
 });
 
