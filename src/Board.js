@@ -70,14 +70,10 @@ Board.prototype.setRowsPerBoard = function() {
   return this.vals.rowsPerBoard;
 };
 
-Board.prototype.color = function() {
-  return '#'+('00000'+(Math.random()*16777216<<0).toString(16)).substr(-6);
-};
-
 Board.prototype.drawOneRow = function(num) {
 	var maxCells = this.vals.cellsPerRow;
   for(var i = 0; i<maxCells; i++){
-    this.vals.gameBoard.append("<div id='" + (i+1) +  "-" + num + "'" + cell.aliveOrDead() + " style='background-color:" + this.color() + ";'></div>");
+    this.vals.gameBoard.append("<div id='" + (i+1) +  "-" + num + "'" + cell.aliveOrDead() + " style='background-color:" + cell.color() + ";'></div>");
   }
 };
 
