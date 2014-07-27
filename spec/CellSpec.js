@@ -1,29 +1,37 @@
 describe("Cell", function() {
 
   beforeEach(function() {
-    cell = new Cell();
-    //board.init();
+    this.testCell = new Cell();
   });
 
-  it("creates a cell object", function() {
-    expect(typeof(cell)).toEqual("object");
+  it("is a Cell object", function() {
+    expect(this.testCell instanceof Cell).toEqual(true);
   });
 
-  it("randomly assigns alive to cells", function() {
-    var life = cell.aliveOrDead();
-    var output;
-    if ( cell.aliveOrDead() == "class='cell-alive'"|| "class='cell-dead'") {
-      output =  true;
-    }
-    // I know this is janky. Will work on a stats driven test later.
-    expect(output).toEqual(true);
+  it("defaults to dead", function() {
+    expect(this.testCell.isAlive()).toEqual(false);
   });
 
-  it("sets a random color to a cell", function() {
-    var color = cell.color();
-    var hexColor = /#[0-9 | a-f]{6}/i;
-    var result = color.match(hexColor).toString().length;
-    expect(result).toEqual(7);
+  it("can be brought to life", function() {
+    this.testCell.live();
+    expect(this.testCell.isAlive()).toEqual(true);
+  });
+
+  it("can be killed", function() {
+    this.testCell.live();
+    this.testCell.die();
+    expect(this.testCell.isAlive()).toEqual(false);
+  });
+
+  describe("cell.id()", function() {
+    it("gets cell id", function() {
+      expect(this.testCell.id()).toEqual([]);
+    });
+
+    it("sets cell id", function() {
+      this.testCell.id(1,1);
+      expect(this.testCell.id()).toEqual([1,1]);
+    });
   });
 
 });
