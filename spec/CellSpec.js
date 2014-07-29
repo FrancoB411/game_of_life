@@ -24,11 +24,11 @@ describe("Cell", function() {
   });
 
   describe("cell.id()", function() {
-    it("gets cell id", function() {
+    it("gets cell id when no passed params", function() {
       expect(this.testCell.id()).toEqual([]);
     });
 
-    it("sets cell id", function() {
+    it("sets cell id when passed params", function() {
       this.testCell.id(1,1);
       expect(this.testCell.id()).toEqual([1,1]);
     });
