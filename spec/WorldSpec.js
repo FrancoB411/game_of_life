@@ -18,9 +18,10 @@ describe("World", function(){
   it("has a height", function() {
     expect(this.world.height).toBe(1);
   });
-
-  it("has the current generation of cells", function() {
-    expect(this.cells instanceof Array).toBe(true);
+  describe("cells", function() {
+    it("the current generation of cells", function() {
+      expect(this.cells instanceof Array).toBe(true);
+    });
   });
 
   describe("can set height and width", function() {
@@ -147,15 +148,126 @@ describe("World", function(){
     });
   });
 
-  describe("allCoordsAreNeighborly()", function() {
-    it("returns true if all coordinates in an ID are less than 2 apart", function(){
+  describe("areCoordinatesAdjacent(cellId, cellId)", function() {
+    it("returns true if all coordinates are <= 1", function(){
       var id1 = [1,2,3,4,5,6,7];
       var id2 = [0,1,2,3,4,5,6];
-      expect(this.world.allCoordsAreNeighborly(id1, id2)).toBe(true);
+      expect(this.world.areCoordinatesAdjacent(id1, id2)).toBe(true);
+    });
+    it("returns false if any coordinate distance is > 1", function(){
+      var id1 = [2,2,3,4,5,6,7];
+      var id2 = [0,1,2,3,4,5,6];
+      expect(this.world.areCoordinatesAdjacent(id1, id2)).toBe(false);
     });
   });
+
+  describe("getNeighbors(cell, cells)", function() {
+    beforeEach(function() {
+      this.world.setHeight(3);
+      this.world.setWidth(3);
+      this.world.setCells();
+      this.cells = this.world.currentCells;
+      this.selfCell = this.cells[0];
+      
+      //neighbors
+      this.neighbor12 = this.cells[1];
+      this.neighbor21 = this.cells[3];
+      this.neighbor22 = this.cells[4];
+
+      //non-neighbors
+      this.cell13 = this.cells[2];
+      this.cell23 = this.cells[5];
+      
+      this.neighbors = this.world.getNeighbors(this.selfCell, this.cells);
+    });
+
+    it("returns an array of cells that are neighbors", function() {
+      var neighborIds = _.map(this.neighbors, function(cell) { return cell.id(); });
+      expect(this.neighbors.length).toBe(3);
+    });
+    it("each cell is an immediate neighbor", function() {
+      var cellId = this.selfCell.id();
+
+      for(var i = 0; i < this.neighbors.length; i++){
+        var neighborId = this.neighbors[i].id();
+        var areAdjacent = this.world.areCoordinatesAdjacent(cellId, neighborId);
+        expect(areAdjacent).toBe(true);
+      }
+    });
+  });
+
+  describe("GetComputableCells(width, height, listOfLiveCells)", function(){
+    beforeEach(function() {
+      this.world.setHeight(5);
+      this.world.setWidth(5);
+      this.cell = new Cell();
+      this.cell.id(3,3);
+      this.world.currentCells.push(cell);
+      this.cells = this.world.currentCells;
+    });
+
+    it("returns an array of all computable cells in the world", function() {
+      var width =  this.world.width;
+      var height =  this.world.height;
+      this.cells[0].live();
+      var computableCells = this.world.getComputableCells(width, height, this.cells);
+      expect(computableCells instanceof Array).toBe(true);
+      expect(computableCells.length).toEqual(9);
+      // expect computable cells to include the original cell
+      // expect every cell id in computable cells to be unique
+      // expect all cell ID's max x and y coords to be less than width & height
+    });
+  });
+
+  describe("listNeighborIDsFor(id, width, height)", function() {
+    it("returns a list of neighbor ids for a given id", function() {
+      var id = [3,3];
+      var expected = [[2,2],[2,3], [2,4], [3,2], [3,4], [4,2], [4,3], [4,4]];
+      var neighborIDs = this.world.listNeighborIDsFor(id, 5, 5);
+
+      function equalIDs(exp) {
+        return _.isEqual(exp, neighborID);
+      }
+
+      for(var i = neighborIDs.length - 1; i >= 0; i--) {
+        var neighborID = neighborIDs[i];
+        var match = _.filter(expected, equalIDs);
+        expect(match.length).toEqual(1);
+        expect(match[0]).toEqual(neighborID);
+      }
+      expect(neighborIDs instanceof Array).toBe(true);
+      expect(neighborIDs.length).toEqual(8);
+    });
+  });
+
+  describe("copyCellList(cellList)", function() {
+    beforeEach(function() {
+      this.world.setHeight(5);
+      this.world.setWidth(5);
+      this.world.setCells();
+      this.cells = this.world.currentCells;
+    });
+
+    it("returns a new cell list with copies of all cells in cellList", function() {
+      var newList = this.world.copyCellList(this.cells);
+      var self = this;
+      newList.forEach(function(newCell){
+        var newCellID = newCell.id();
+        var oldCellID = self.cells[newList.indexOf(newCell)].id();
+        expect(_.isEqual(newCellID, oldCellID)).toBe(true);
+        expect(newCellID === oldCellID).toBe(false);
+      });
+    });
+  });
+
 });
 
+// TODO SetCells should give unique ids
+// TODO setCells ids should all be within width and height
+// TODO setCells should not create new cell if cell exists
+
+// collect living neighbors
+// add dead neighbors
 
   // describe("world.tick()", function() {
   //   beforeEach(function(){
