@@ -124,3 +124,11 @@ World.prototype.copyCellList = function(cellList) {
   return newCellList;
 };
 
+World.prototype.idOutOfRange = function(id, width, height) {
+  return (id[0] > width || id[1] > height);
+};
+
+World.prototype.cullOutOfRangeCells = function(cells, width, height) {
+  var self = this;
+  return _.reject(cells, function(cell){ return self.idOutOfRange(cell.id(), width, height); });
+};

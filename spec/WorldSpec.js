@@ -217,6 +217,10 @@ describe("World", function(){
       // expect every cell id in computable cells to be unique
       // expect all cell ID's max x and y coords to be less than width & height
     });
+    // TODO 
+    //it("does not return cells out of the world's range", function() {
+
+      //})
   });
 
   describe("listNeighborIDsFor(id, width, height)", function() {
@@ -257,6 +261,42 @@ describe("World", function(){
         expect(_.isEqual(newCellID, oldCellID)).toBe(true);
         expect(newCellID === oldCellID).toBe(false);
       });
+    });
+  });
+
+  describe("cullOutOfRangeCells(cells, width, height)", function() {
+    beforeEach(function() {
+      this.world.setHeight(5);
+      this.world.setWidth(5);
+      this.world.setCells();
+      this.cells = this.world.currentCells;
+    });
+
+    it("removes cells out of range of the world's width and height", function() {
+      expect(this.cells.length).toEqual(25);
+      var culledCells = this.world.cullOutOfRangeCells(this.cells, 4, 4);
+      expect(culledCells.length).toEqual(16);
+    });
+  });
+
+  describe("idOutOfRange(id, width, height)", function() {
+    beforeEach(function() {
+      this.width = 4;
+      this.height = 4;
+      this.inRangeID = [4,4];
+      this.outOfRangeId = [4,5];
+    });
+
+    it("returns true if an ID is out of world boundaries", function() {
+      expect(this.world.idOutOfRange( this.outOfRangeId,
+                                      this.width,
+                                      this.height)).toBe(true);
+    });
+
+    it("returns false if ID is within world boundaries", function() {
+       expect(this.world.idOutOfRange(  this.inRangeID,
+                                        this.width,
+                                        this.height)).toBe(false);
     });
   });
 
