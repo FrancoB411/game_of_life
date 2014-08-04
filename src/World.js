@@ -77,30 +77,24 @@ World.prototype.getNeighbors = function(cell, listOfCells) {
 World.prototype.getComputableCells = function(width, height, currentLivingCells){
   // Copy currentLivingCells to a newlist
   var newList = this.copyCellList(currentLivingCells);
-  //For each cell in currentLivingCells
-  for (var i = currentLivingCells.length - 1; i >= 0; i--) {
-    //get a currentLivingCell
-    var currentCell = currentLivingCells[i];
-    //make a list of computableIDs within range of 1 for that currentLivingCell
-    var computableIDs = this.listNeighborIDsFor(currentCell.id());
-    
-    //for each id in the list
-    for (var j = computableIDs.length - 1; j >= 0; j--) {
-      var computableID = computableIDs[j];
-      // if there's a cell in the newlist with that ID
-      if(_.some(newList, function(newListCell){
-                  var id1 = computableID;
-                  var id2 = newListCell.id();
-                  return _.isEqual(id1, id2);
-                }))
-      {
-        continue; //do nothing
-      } else {
-        //create a new cell with that ID and push it into the newlist.
-        var newCell = new Cell();
-        newCell.id(computableID[0], computableID[1]);
-        newList.push(newCell);
-      }
+  //get neighborIDs for each cell in currentLivingCells
+  var computableIDs = this.getComputableIDsFrom(currentLivingCells);
+  //instantiate dead cells for any id's without cells.
+  for (var j = computableIDs.length - 1; j >= 0; j--) {
+    var computableID = computableIDs[j];
+    // if there's a cell in the newlist with that ID
+    if(_.some(newList, function(newListCell){
+                var id1 = computableID;
+                var id2 = newListCell.id();
+                return _.isEqual(id1, id2);
+              }))
+    {
+      continue; //do nothing
+    } else {
+      //create a new cell with that ID and push it into the newlist.
+      var newCell = new Cell();
+      newCell.id(computableID[0], computableID[1]);
+      newList.push(newCell);
     }
   }
   return newList;
@@ -131,4 +125,10 @@ World.prototype.idOutOfRange = function(id, width, height) {
 World.prototype.cullOutOfRangeCells = function(cells, width, height) {
   var self = this;
   return _.reject(cells, function(cell){ return self.idOutOfRange(cell.id(), width, height); });
+};
+
+World.prototype.getComputableIDsFrom = function(cellList){
+  return  _.reduce(cellList, function(memo, cell){
+            return memo.concat(this.listNeighborIDsFor(cell.id()));
+          }.bind(this),[]);
 };

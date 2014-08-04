@@ -333,6 +333,22 @@ describe("World", function(){
     });
   });
 
+  describe("getComputableIDsFrom(cellList)", function() {
+    beforeEach(function() {
+      this.world.setHeight(2);
+      this.world.setWidth(2);
+      this.world.setCells();
+      this.cells = this.world.currentCells;
+    });
+
+    it("takes a list of cells and returns all computable IDs", function() {
+      var computableIDs = this.world.getComputableIDsFrom(this.cells);
+      expect(computableIDs.length).toBe(32);
+      expect(_.first(computableIDs)).toEqual([0,0]);
+      expect(_.last(computableIDs)).toEqual([3,3]);
+    });
+  });
+
 });
 
 // TODO SetCells should give unique ids
