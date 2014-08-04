@@ -200,27 +200,50 @@ describe("World", function(){
     beforeEach(function() {
       this.world.setHeight(5);
       this.world.setWidth(5);
+
       this.cell = new Cell();
       this.cell.id(3,3);
       this.world.currentCells.push(cell);
+      this.cells[0].live();
+
+      this.cell2 = new Cell();
+      this.cell2.id(5,5);
+      this.world.currentCells.push(cell);
+      this.cells[1].live();
+      
       this.cells = this.world.currentCells;
+      this.width =  this.world.width;
+      this.height =  this.world.height;
+      this.computableCells = this.world.getComputableCells(this.width, this.height, this.cells);
     });
 
     it("returns an array of all computable cells in the world", function() {
-      var width =  this.world.width;
-      var height =  this.world.height;
-      this.cells[0].live();
-      var computableCells = this.world.getComputableCells(width, height, this.cells);
-      expect(computableCells instanceof Array).toBe(true);
-      expect(computableCells.length).toEqual(9);
-      // expect computable cells to include the original cell
+      expect(this.computableCells instanceof Array).toBe(true);
+      expect(this.computableCells.length).toEqual(10);
       // expect every cell id in computable cells to be unique
       // expect all cell ID's max x and y coords to be less than width & height
     });
-    // TODO 
-    //it("does not return cells out of the world's range", function() {
-
-      //})
+    it("includes the original cells in the Array", function() {
+      var hasOriginalCell1 = _.any(this.computableCells, function(cell){
+                              return _.isEqual(this.cell.id(), cell.id());
+                            });
+      var hasOriginalCell2 = _.any(this.computableCells, function(cell){
+                        return _.isEqual(this.cell.id(), cell.id());
+                      });
+      expect(hasOriginalCell1).toBe(true);
+      expect(hasOriginalCell2).toBe(true);
+    });
+    it("returns no duplicate cells", function() {
+      var noDuplicateCells = (_.uniq(this.computableCells).length === this.computableCells.length);
+      expect(noDuplicateCells).toBe(true);
+    });
+    it("does not return cells out of the world's range", function() {
+      var hasOutOfRangeCells =  _.any(this.computableCells, function(cell) {
+                                  return this.cell.id()[0] > this.width ||
+                                         this.cell.id()[1] > this.height;
+                                });
+      expect(hasOutOfRangeCells).toBe(false);
+    });
   });
 
   describe("listNeighborIDsFor(id, width, height)", function() {
@@ -285,10 +308,20 @@ describe("World", function(){
       this.height = 4;
       this.inRangeID = [4,4];
       this.outOfRangeId = [4,5];
+      this.iDWithZero = [0,4];
+      this.iDWithNegative = [1,-1];
     });
 
     it("returns true if an ID is out of world boundaries", function() {
       expect(this.world.idOutOfRange( this.outOfRangeId,
+                                      this.width,
+                                      this.height)).toBe(true);
+    });
+    it("returns true if an ID has <= 0 coordinate", function() {
+      expect(this.world.idOutOfRange( this.iDWithZero,
+                                      this.width,
+                                      this.height)).toBe(true);
+      expect(this.world.idOutOfRange( this.iDWithNegative,
                                       this.width,
                                       this.height)).toBe(true);
     });

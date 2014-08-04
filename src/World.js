@@ -125,7 +125,7 @@ World.prototype.copyCellList = function(cellList) {
 };
 
 World.prototype.idOutOfRange = function(id, width, height) {
-  return (id[0] > width || id[1] > height);
+  return (id[0] > width || id[1] > height) || (id[0] <= 0 || id[1] <= 0);
 };
 
 World.prototype.cullOutOfRangeCells = function(cells, width, height) {
