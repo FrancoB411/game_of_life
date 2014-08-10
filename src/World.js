@@ -63,6 +63,9 @@ World.prototype.areCoordinatesAdjacent = function(id1, id2) {
   return true;
 };
 
+// gets neighbors for a cell
+// @param a cell, a list of cells
+// @return a list of neighbors
 World.prototype.getNeighbors = function(cell, listOfCells) {
   var neighbors = [];
   for(var i =0; i < listOfCells.length; i++){
@@ -74,32 +77,29 @@ World.prototype.getNeighbors = function(cell, listOfCells) {
   return neighbors;
 };
 
+// calculates all computable cells in a generation.
+// @param width int, height int, cellList of live cells
+// @return cell list of computbale cells. 
 World.prototype.getComputableCells = function(width, height, currentLivingCells){
-  // Copy currentLivingCells to a newlist
   var newList = this.copyCellList(currentLivingCells);
-  //get neighborIDs for each cell in currentLivingCells
-  var computableIDs = this.getComputableIDsFrom(currentLivingCells);
+  var computableIDs = this.getComputableIDsAround(width, height, currentLivingCells);
+  var newComputableIDs =
+      this.removeIDsThatMatchIDsInCellList( computableIDs,
+                                            currentLivingCells);
   //instantiate dead cells for any id's without cells.
-  for (var j = computableIDs.length - 1; j >= 0; j--) {
-    var computableID = computableIDs[j];
-    // if there's a cell in the newlist with that ID
-    if(_.some(newList, function(newListCell){
-                var id1 = computableID;
-                var id2 = newListCell.id();
-                return _.isEqual(id1, id2);
-              }))
-    {
-      continue; //do nothing
-    } else {
-      //create a new cell with that ID and push it into the newlist.
-      var newCell = new Cell();
-      newCell.id(computableID[0], computableID[1]);
-      newList.push(newCell);
-    }
+  for (var j = newComputableIDs.length - 1; j >= 0; j--) {
+    var id = newComputableIDs[j];
+    var newCell = this.makeNewCellWithID(id);
+    newList.push(newCell);
   }
   return newList;
 };
 
+// given a ID, lists its immediate neighbor ID's
+    // Each ID is a two dimentionsal array.
+    // Would be nice to make this dimension independent.
+// @param and ID array
+// @return Array of ID's
 World.prototype.listNeighborIDsFor = function(id){
   var neighborIDs =[];
   neighborIDs = neighborIDs.concat([[id[0]-1, id[1] -1],[id[0], id[1] -1],[id[0]+1, id[1] -1]]);
@@ -113,6 +113,7 @@ World.prototype.copyCellList = function(cellList) {
   cellList.forEach(function(oldCell){
     var newCell = new Cell();
     newCell.uid = _.clone(oldCell.uid);
+    newCell.alive = _.clone(oldCell.isAlive());
     newCellList.push(newCell);
   });
   return newCellList;
@@ -127,8 +128,88 @@ World.prototype.cullOutOfRangeCells = function(cells, width, height) {
   return _.reject(cells, function(cell){ return self.idOutOfRange(cell.id(), width, height); });
 };
 
-World.prototype.getComputableIDsFrom = function(cellList){
+// gets the id of the possible computable neighbors for each cell in list
+// @param Array of cells
+// @return Array of IDs
+World.prototype.getComputableIDsAround = function(width, height, cellList){
+  var neighborhoods = this.getIDsInNeighborRangeForCellList(cellList);
+  var uniqueIDsInNeighborhoods = this.deleteDuplicateIDs(neighborhoods);
+  var uniqueIDsInRangeInNeighborhoods = this.removeOutOfRangeIDs(width, height, uniqueIDsInNeighborhoods);
+  return uniqueIDsInRangeInNeighborhoods;
+};
+
+// TODO make tests for this
+// gets the ids in neighbor rangs for a list of cells
+// @param Array of cells
+// @return Array of IDs
+World.prototype.getIDsInNeighborRangeForCellList = function(cellList){
   return  _.reduce(cellList, function(memo, cell){
             return memo.concat(this.listNeighborIDsFor(cell.id()));
           }.bind(this),[]);
+};
+
+// returns true if the id properties match, false if they don't.
+// @param two IDs
+// @return boolean
+World.prototype.isSameID =  function(id1, id2){
+  return _.isEqual(id1, id2);
+};
+
+// removes any IDs that match the IDs in cell array
+// @params iDArray, cellArray
+// @return iDArray
+World.prototype.removeIDsThatMatchIDsInCellList = function(iDList, cellList){
+  return _.filter(iDList, function(id){
+    return !this.idIsInCellList(cellList, id);
+  }.bind(this));
+};
+
+// checks if a CellList contains an ID
+// @params cell Array, id
+// @return boolean
+World.prototype.idIsInCellList = function(cellList, id) {
+  return _.some(cellList, function(cell){
+    var cellID = cell.id();
+    return this.isSameID(cellID, id);
+  }.bind(this));
+};
+
+World.prototype.makeNewCellWithID = function(id) {
+  var cell  =  new Cell();
+  cell.uid = id;
+  return cell;
+};
+
+World.prototype.isIDInIDList =  function(idList, id) {
+  return _.some(idList, function(listID){
+    return this.isSameID(listID, id);
+  }.bind(this));
+};
+
+World.prototype.deleteDuplicateIDs = function(IDList) {
+  var tempList = _.cloneDeep(IDList);
+  var uniques = [];
+  while(tempList.length){
+    var currentID = tempList.shift();
+    if(this.isIDInIDList(tempList, currentID)){
+      continue;
+    }else{
+      uniques.push(currentID);
+    }
+  }
+  return uniques;
+};
+
+World.prototype.removeOutOfRangeIDs = function(width, height, idList) {
+  var tempList = _.cloneDeep(idList);
+  var inBounds = [];
+  while(tempList.length){
+    var currentID = tempList.shift();
+    if(this.idOutOfRange( currentID, width, height)){
+      continue;
+    }else{
+      inBounds.push(currentID);
+    }
+  }
+  return inBounds;
 };

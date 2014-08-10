@@ -168,7 +168,7 @@ describe("World", function(){
       this.world.setCells();
       this.cells = this.world.currentCells;
       this.selfCell = this.cells[0];
-      
+
       //neighbors
       this.neighbor12 = this.cells[1];
       this.neighbor21 = this.cells[3];
@@ -177,7 +177,7 @@ describe("World", function(){
       //non-neighbors
       this.cell13 = this.cells[2];
       this.cell23 = this.cells[5];
-      
+
       this.neighbors = this.world.getNeighbors(this.selfCell, this.cells);
     });
 
@@ -203,14 +203,14 @@ describe("World", function(){
 
       this.cell = new Cell();
       this.cell.id(3,3);
-      this.world.currentCells.push(cell);
-      this.cells[0].live();
+      this.cell.live()
+      this.world.currentCells.push(this.cell);
 
       this.cell2 = new Cell();
       this.cell2.id(5,5);
-      this.world.currentCells.push(cell);
-      this.cells[1].live();
-      
+      this.cell2.live();
+      this.world.currentCells.push(this.cell2);
+
       this.cells = this.world.currentCells;
       this.width =  this.world.width;
       this.height =  this.world.height;
@@ -219,9 +219,7 @@ describe("World", function(){
 
     it("returns an array of all computable cells in the world", function() {
       expect(this.computableCells instanceof Array).toBe(true);
-      expect(this.computableCells.length).toEqual(10);
-      // expect every cell id in computable cells to be unique
-      // expect all cell ID's max x and y coords to be less than width & height
+      expect(this.computableCells.length).toEqual(12);
     });
     it("includes the original cells in the Array", function() {
       var hasOriginalCell1 = _.any(this.computableCells, function(cell){
@@ -273,18 +271,27 @@ describe("World", function(){
       this.world.setWidth(5);
       this.world.setCells();
       this.cells = this.world.currentCells;
+      _.first(this.cells).live();
+      _.last(this.cells).live();
+      this.newList = this.world.copyCellList(this.cells);
     });
 
     it("returns a new cell list with copies of all cells in cellList", function() {
-      var newList = this.world.copyCellList(this.cells);
       var self = this;
-      newList.forEach(function(newCell){
+      this.newList.forEach(function(newCell){
         var newCellID = newCell.id();
-        var oldCellID = self.cells[newList.indexOf(newCell)].id();
+        var oldCellID = self.cells[self.newList.indexOf(newCell)].id();
         expect(_.isEqual(newCellID, oldCellID)).toBe(true);
         expect(newCellID === oldCellID).toBe(false);
       });
     });
+    it("keeps living cells living", function() {
+      expect(_.first(this.newList).isAlive()).toBe(true);
+    });
+    it("keeps dead cells dead", function() {
+      expect(this.newList[1].isAlive()).toBe(false);
+    });
+
   });
 
   describe("cullOutOfRangeCells(cells, width, height)", function() {
@@ -333,39 +340,169 @@ describe("World", function(){
     });
   });
 
-  describe("getComputableIDsFrom(cellList)", function() {
+  describe("getComputableIDsAround(width, height, cellList)", function() {
     beforeEach(function() {
-      this.world.setHeight(2);
-      this.world.setWidth(2);
-      this.world.setCells();
+      this.world.setHeight(5);
+      this.world.setWidth(5);
+
+      this.cell = new Cell();
+      this.cell.id(3,3);
+      this.cell.live();
+      this.world.currentCells.push(this.cell);
       this.cells = this.world.currentCells;
+
+      this.cell2 = new Cell();
+      this.cell2.id(5,5);
+      this.cell2.live();
+      this.world.currentCells.push(this.cell2);
+
+      this.cells = this.world.currentCells;
+      this.width =  this.world.width;
+      this.height =  this.world.height;
+      this.computableIDs = this.world.getComputableIDsAround(this.width, this.height, this.cells);
     });
 
-    it("takes a list of cells and returns all computable IDs", function() {
-      var computableIDs = this.world.getComputableIDsFrom(this.cells);
-      expect(computableIDs.length).toBe(32);
-      expect(_.first(computableIDs)).toEqual([0,0]);
-      expect(_.last(computableIDs)).toEqual([3,3]);
+    it("returns a list of all computable IDs", function() {
+      expect(this.computableIDs.length).toBe(10);
+      expect(_.first(this.computableIDs)).toEqual([2,2]);
+      expect(_.last(this.computableIDs)).toEqual([4,5]);
+    });
+
+    it("that are unique IDs", function() {
+      var uniques = this.world.deleteDuplicateIDs(_.cloneDeep(this.computableIDs));
+      expect(this.computableIDs).toEqual(uniques);
+    });
+
+    it("within range of the world", function() {
+
     });
   });
 
+  describe("isSameID(id1, id2)", function() {
+    beforeEach(function(){
+      this.world = new World();
+      this.matchingID1 = [1,1];
+      this.matchingID2 = [1,1];
+      this.nonMatchingID1 = [1,2];
+      this.nonMatchingID2 = [2,1];
+    });
+
+    it("returns true if the ids match", function(){
+      var result = this.world.isSameID(this.matchingID1, this.matchingID2);
+      expect(result).toBe(true);
+    });
+    it("returns false is the ids don't match", function(){
+      var result1 = this.world.isSameID(this.nonMatchingID1, this.matchingID1);
+      var result2 = this.world.isSameID(this.nonMatchingID2, this.matchingID1);
+
+      expect(result1).toBe(false);
+      expect(result2).toBe(false);
+    });
+  });
+
+  describe("removeIDsThatMatchIDsInCellList(existingCells, listOfIDs)", function() {
+    beforeEach(function() {
+      this.world = new World();
+      this.world.setWidth(x);
+      this.world.setHeight(y);
+      this.world.setCells();
+      this.cells = this.world.currentCells;
+      this.ids = [[2,2],[4,4]];
+    });
+
+    it("removes any IDs that match the cellIDs in filter array", function() {
+      var filteredIDs = this.world.removeIDsThatMatchIDsInCellList(this.ids, this.cells);
+      expect(filteredIDs).toEqual([[4,4]]);
+    });
+  });
+
+  describe("idIsInCellList(cellList, id)", function() {
+    beforeEach(function() {
+      this.world = new World();
+      this.world.setWidth(x);
+      this.world.setHeight(y);
+      this.world.setCells();
+      this.cellList = this.world.currentCells;
+      this.idInCellList = [2,2];
+      this.idNotInCellList = [4,4];
+    });
+    it("returns true if ID is in cellList", function(){
+      expect(this.world.idIsInCellList(this.cellList, this.idInCellList)).toBe(true);
+    });
+    it("returns false if ID is NOT in cellList", function(){
+      expect(this.world.idIsInCellList(this.cellList, this.idNotInCellList)).toBe(false);
+    });
+  });
+
+  describe("makeNewCellWithID(id)", function(){
+    it("returns a new Cell with the given ID", function() {
+      var id = [1,1];
+      var cell =  this.world.makeNewCellWithID(id);
+      expect(cell instanceof Cell).toBe(true);
+      expect(cell.id()).toEqual(id);
+    });
+  });
+
+  describe("isIDInIDList(iDlist, id)", function(){
+    beforeEach(function(){
+      this.world = new World();
+      this.idList = [[1,1], [2,2], [3,3]];
+      this.idInIDList = [2,2];
+      this.idNotInIDList = [4,4];
+    });
+    it("returns true if an ID is in and ID list", function() {
+      expect(this.world.isIDInIDList(this.idList, this.idInIDList)).toBe(true);
+    });
+    it("returns false if an ID is NOT in and ID list", function() {
+      expect(this.world.isIDInIDList(this.idList, this.idNotInIDList)).toBe(false);
+    });
+  });
+
+  describe("deleteDuplicateIDs(idList)", function() {
+    beforeEach(function(){
+      this.world = new World();
+      this.idList = [[1,1], [1,1], [3,3]];
+      this.uniqueIDList = [[1,1], [3,3]];
+    });
+    it("delete duplicate ID's from an ID list", function() {
+      var uniqueIDs = this.world.deleteDuplicateIDs(this.idList);
+      expect(uniqueIDs).toEqual(this.uniqueIDList);
+    });
+    it("does not modify the original ID list", function() {
+      var uniqueIDs = this.world.deleteDuplicateIDs(this.idList);
+      expect(this.idList).toEqual([[1,1], [1,1], [3,3]]);
+    });
+  });
+
+  describe("removeOutOfRangeIDs(width, height, idList)", function() {
+    beforeEach(function(){
+      this.idList = [[1,1], [1,1], [3,2], [2,3], [2,2]];
+    });
+    it("removes IDs that are out of range", function() {
+      var expectedInRangeIDs = [[1,1], [1,1], [2,2]];
+      var actualinRangeIDs = this.world.removeOutOfRangeIDs(2, 2, this.idList);
+      expect(actualinRangeIDs).toEqual(expectedInRangeIDs);
+    });
+  });
+
+
+
+  // TODO SetCells should give unique ids
+  // TODO setCells ids should all be within width and height
+  // TODO setCells should not create new cell if cell exists
+
+  // collect living neighbors
+  // add dead neighbors
+
+    // describe("world.tick()", function() {
+    //   beforeEach(function(){
+    //     this.world.seed(x,y);
+    //   });
+
+    //   it("gets all live cells and their neighbors", function() {
+    //     var AllComputableCells = this.world.getNeighborhoodsFor(this.cells);
+    //   });
+    // });
+
+
 });
-
-// TODO SetCells should give unique ids
-// TODO setCells ids should all be within width and height
-// TODO setCells should not create new cell if cell exists
-
-// collect living neighbors
-// add dead neighbors
-
-  // describe("world.tick()", function() {
-  //   beforeEach(function(){
-  //     this.world.seed(x,y);
-  //   });
-
-  //   it("gets all live cells and their neighbors", function() {
-  //     var AllComputableCells = this.world.getNeighborhoodsFor(this.cells); 
-  //   });
-  // });
-
-
