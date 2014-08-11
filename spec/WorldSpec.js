@@ -1,3 +1,10 @@
+function buildCell(x, y, bool) {
+  var cell =  new Cell();
+  cell.alive = bool;
+  cell.id(x, y);
+  return cell;
+}
+
 describe("World", function(){
   var x, y;
   x = y = 3;
@@ -203,7 +210,7 @@ describe("World", function(){
 
       this.cell = new Cell();
       this.cell.id(3,3);
-      this.cell.live()
+      this.cell.live();
       this.world.currentCells.push(this.cell);
 
       this.cell2 = new Cell();
@@ -486,6 +493,129 @@ describe("World", function(){
   });
 
 
+  describe("countLivingNeighbors(cellList, cell)", function() {
+    beforeEach(function(){
+      this.world =  new World();
+      this.world.width = 3;
+      this.world.height = 3;
+      this.world.setCells();
+      this.cellWithNoNeighbors = _.find(this.world.currentCells, function(cell){
+        return _.isEqual(cell.id(), [1,1]);
+      });
+      this.cellWithNoNeighbors.live();
+      this.cellWithTwoNeighbors = _.find(this.world.currentCells, function(cell){
+        return _.isEqual(cell.id(), [3,3]);
+      });
+      this.cellWithTwoNeighbors.live();
+      this.cellWithThreeNeighbors = _.find(this.world.currentCells, function(cell){
+        return _.isEqual(cell.id(), [3,2]);
+      });
+      this.cellWithThreeNeighbors.live();
+      this.cellWithOneNeighbor = _.find(this.world.currentCells, function(cell){
+        return _.isEqual(cell.id(), [3,1]);
+      });
+      this.cellWithOneNeighbor.live();
+      this.neighbor23 = _.find(this.world.currentCells, function(cell){
+        return _.isEqual(cell.id(), [2,3]);
+      });
+      this.neighbor23.live();
+    });
+    it("returns an integer that is equal to the number of neighbors", function(){
+      var neighborCount0 = this.world.countLivingNeighbors(this.world.currentCells, this.cellWithNoNeighbors);
+      var neighborCount1 = this.world.countLivingNeighbors(this.world.currentCells, this.cellWithOneNeighbor);
+      var neighborCount2 = this.world.countLivingNeighbors(this.world.currentCells, this.cellWithTwoNeighbors);
+      var neighborCount3 = this.world.countLivingNeighbors(this.world.currentCells, this.cellWithThreeNeighbors);
+      expect(neighborCount0).toBe(0);
+      expect(neighborCount1).toBe(1);
+      expect(neighborCount2).toBe(2);
+      expect(neighborCount3).toBe(3);
+    });
+  });
+
+describe("removeDeadCellsFrom(cellList)", function(){
+  beforeEach(function(){
+    this.world = new World();
+    this.liveCell = buildCell(7, 7, true);
+    this.deadCell = buildCell(7, 6, false);
+    this.deadCell = buildCell(6, 6, false);
+    this.list = [this.liveCell, this.deadCell];
+    this.listCopy = this.world.copyCellList(this.list);
+    this.removed = this.world.removeDeadCellsFrom(this.list);
+  });
+  it("removes dead cells from a cell list", function() {
+    expect(this.removed).toEqual([this.liveCell]);
+  });
+  it("does not modify the original list", function() {
+    expect(this.list).toEqual(this.listCopy);
+  });
+});
+
+  describe("judgeCells(computableCells)", function() {
+    beforeEach(function(){
+
+      this.world =  new World();
+      this.cellWithTooFewNeighbors      = buildCell(7,7, true);
+      this.cellWithTooManyNeighbors     = buildCell(3,3, true);
+      this.neighborOne                  = buildCell(2,2, true);
+      this.neighborTwo                  = buildCell(3,2, true);
+      this.neighborThree                = buildCell(4,2, true);
+      this.neighborFour                 = buildCell(2,3, true);
+
+      this.cellWithTwoNeighbors         = buildCell(2,1, true);
+      this.cellWithThreeNeighbors       = buildCell(4,1, true);
+      this.thirdNeighbor                = buildCell(5,2, true);
+      this.deadCellWithThreeNeighbors   = buildCell(1,2, false);
+
+      this.cells = [  this.cellWithTooFewNeighbors,
+                      this.cellWithTooManyNeighbors,
+                      this.neighborOne,
+                      this.neighborTwo,
+                      this.neighborThree,
+                      this.neighborFour,
+                      this.cellWithTwoNeighbors,
+                      this.cellWithThreeNeighbors,
+                      this.thirdNeighbor,
+                      this.deadCellWithThreeNeighbors
+                    ];
+      this.cellsCopy = this.world.copyCellList(this.cells);
+      this.judgedCells = this.world.judgeCells(this.cells);
+    });
+
+    it("returns a list of cells", function(){
+      expect(this.judgedCells instanceof Array).toBe(true);
+      expect(this.judgedCells[0] instanceof Cell).toBe(true);
+    });
+    it("that is the same length as computableCells", function(){
+      expect(this.cells.length).toEqual(this.judgedCells.length);
+    });
+    it("kills living cells with less than two live neighbors ", function(){
+      var judgedCellWithTooFewNeighbors = _.find(this.judgedCells, function(cell) {
+        return _.isEqual(cell.id(), this.cellWithTooFewNeighbors.id());
+      }.bind(this));
+      expect(judgedCellWithTooFewNeighbors.isAlive()).toBe(false);
+    });
+    it("kills living cells with more than three live neighbors ", function(){
+      var judgedCellWithTooManyNeighbors = _.find(this.judgedCells, function(cell) {
+        return _.isEqual(cell.id(), this.cellWithTooManyNeighbors.id());
+      }.bind(this));
+      expect(judgedCellWithTooManyNeighbors.isAlive()).toBe(false);
+    });
+    it("keeps living cells with two or three live neighbors alive ", function(){
+      var judgedCellWithTwoNeighbors = _.find(this.judgedCells, function(cell) {
+        return _.isEqual(cell.id(), this.cellWithTwoNeighbors.id());
+      }.bind(this));
+      expect(judgedCellWithTwoNeighbors.isAlive()).toBe(true);
+    });
+    it("brings dead cells with three live neighbors to life", function(){
+      var judgedDeadCellWithThreeNeighbors = _.find(this.judgedCells, function(cell) {
+        return _.isEqual(cell.id(), this.deadCellWithThreeNeighbors.id());
+      }.bind(this));      
+      expect(judgedDeadCellWithThreeNeighbors.isAlive()).toBe(true);
+    });
+    it("does not modify the original cell List", function(){
+      expect(_.isEqual(this.cells, this.cellsCopy)).toBe(true);
+    });
+  });
 
   // TODO SetCells should give unique ids
   // TODO setCells ids should all be within width and height

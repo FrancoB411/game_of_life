@@ -109,7 +109,7 @@ World.prototype.listNeighborIDsFor = function(id){
 };
 
 World.prototype.copyCellList = function(cellList) {
-  newCellList = [];
+  var newCellList = [];
   cellList.forEach(function(oldCell){
     var newCell = new Cell();
     newCell.uid = _.clone(oldCell.uid);
@@ -212,4 +212,37 @@ World.prototype.removeOutOfRangeIDs = function(width, height, idList) {
     }
   }
   return inBounds;
+};
+
+
+World.prototype.countLivingNeighbors = function(cellList, cell){
+  var liveCells = _.filter(cellList, function(listCell){ return listCell.isAlive(); });
+  return this.getNeighbors(cell, liveCells).length;
+};
+
+World.prototype.removeDeadCellsFrom =  function(cellList){
+  var liveCellList = this.copyCellList(cellList);
+  return _.filter(liveCellList, function(cell){
+    return cell.isAlive();
+  });
+};
+
+World.prototype.judgeCells = function(cellList) {
+  var game = new Game();
+  var liveCellsReference = this.removeDeadCellsFrom(cellList);
+  var liveCellsNextGen = this.copyCellList(liveCellsReference);
+  for (var i = liveCellsNextGen.length - 1; i >= 0; i--) {
+    var nextGenCell = liveCellsNextGen[i];
+    var neighborCount = this.countLivingNeighbors(liveCellsReference, nextGenCell);
+    game.killCellWithLessThanTwoNeighbors(nextGenCell, neighborCount);
+    game.killCellWithMoreThanThreeNeighbors(nextGenCell, neighborCount);
+  }
+  var deadCellsReference = _.filter(cellList, function(listCell){ return !listCell.isAlive(); });
+  var deadCellsNextGen = this.copyCellList(deadCellsReference);
+  for (var j = deadCellsNextGen.length - 1; j >= 0; j--) {
+    var nextGenDeadCell = deadCellsNextGen[j];
+    var neighborCountforDeadCell = this.countLivingNeighbors(liveCellsReference, nextGenDeadCell);
+    game.birthCellWithThreeNeighbors(nextGenDeadCell, neighborCountforDeadCell);
+  }
+  return deadCellsNextGen.concat(liveCellsNextGen);
 };
