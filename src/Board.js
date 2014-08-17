@@ -17,7 +17,8 @@ Board.prototype.vals = {
 };
 Board.prototype.setGameBoard =  function() {
   this.vals.gameBoard = $("#game-board");
-}
+};
+
 //gives us the window height minus the default margins.
 Board.prototype.setCanvasHeight = function() {
   board.vals.canvasHeight = Math.floor(window.innerHeight - (board.vals.marginDefault*2));
@@ -70,10 +71,16 @@ Board.prototype.setRowsPerBoard = function() {
   return this.vals.rowsPerBoard;
 };
 
+Board.prototype.updateCell = function(id, livingStatus) {
+  var $cell = this.vals.gameBoard.find("#" + id[0] + "-" + id[1]);
+  var status = livingStatus ? 'cell-alive' : 'cell-dead';
+  $cell.attr("class", status);
+};
+
 Board.prototype.drawOneRow = function(num) {
 	var maxCells = this.vals.cellsPerRow;
   for(var i = 0; i<maxCells; i++){
-    this.vals.gameBoard.append("<div id='" + (i+1) +  "-" + num + "'" + cell.aliveOrDead() + " style='background-color:" + cell.color() + ";'></div>");
+    this.vals.gameBoard.append('<div id="' + (i+1) +  '-' + num + '" class="cell-dead" style="background-color:red;"></div>');
   }
 };
 
@@ -97,13 +104,3 @@ Board.prototype.init = function() {
     board.drawBoard();
     board.drawAllRows();
 };
-
-// function Cell() {
-// }
-// Cell.prototype.aliveOrDead() {
-
-// }
-//make cell object
-//coordinate, class, color, visibility
-//random-toggle as a "global" function
-//
