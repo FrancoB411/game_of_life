@@ -77,6 +77,8 @@ Board.prototype.updateCell = function(id, livingStatus) {
   $cell.attr("class", status);
 };
 
+
+
 Board.prototype.drawOneRow = function(num) {
 	var maxCells = this.vals.cellsPerRow;
   for(var i = 0; i<maxCells; i++){

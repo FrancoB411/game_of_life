@@ -82,7 +82,9 @@ World.prototype.getNeighbors = function(cell, listOfCells) {
 // @return cell list of computbale cells. 
 World.prototype.getComputableCells = function(width, height, currentLivingCells){
   var newList = this.copyCellList(currentLivingCells);
+  // console.log("cells Copied");
   var computableIDs = this.getComputableIDsAround(width, height, currentLivingCells);
+  // console.log("ids computed");
   var newComputableIDs =
       this.removeIDsThatMatchIDsInCellList( computableIDs,
                                             currentLivingCells);
@@ -90,7 +92,7 @@ World.prototype.getComputableCells = function(width, height, currentLivingCells)
   for (var j = newComputableIDs.length - 1; j >= 0; j--) {
     var id = newComputableIDs[j];
     var newCell = this.makeNewCellWithID(id);
-    newList.push(newCell);
+    newList.unshift(newCell);
   }
   return newList;
 };
@@ -226,7 +228,9 @@ World.prototype.removeDeadCellsFrom =  function(cellList){
     return cell.isAlive();
   });
 };
-
+// judges cells based on game rules
+// @params cellArray of living/dead cells
+// @return cellArray of judged living/dead cells
 World.prototype.judgeCells = function(cellList) {
   var game = new Game();
   var liveCellsReference = this.removeDeadCellsFrom(cellList);

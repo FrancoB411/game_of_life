@@ -106,6 +106,7 @@ describe("Board", function() {
     expect(tooLong[0]).not.toBeDefined();
   });
 
+  // TODO move this to boardUpdater
   describe("updateCell(id, LivingStatus)", function() {
       beforeEach(function(){
         var cell = buildCell(2,1, true);
@@ -123,9 +124,6 @@ describe("Board", function() {
         expect($cellDiv.attr("class")).toEqual('cell-alive');
       });
   });
-
-
-
 
 });
 
